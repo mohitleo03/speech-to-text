@@ -10,7 +10,7 @@ app.use(express.static("public"));
 app.use("/getAudio", (request, response, next) => {
   if (request.files && Object.keys(request.files).length !== 0) {
     const uploadedFile = request.files.audio;
-    console.log(uploadedFile.name);
+    console.log(`file size is = ${uploadedFile.size} & file name is ${uploadedFile.name}`);
     response
       .status(200)
       .json({
