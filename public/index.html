@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Recorder</title>
+</head>
+<style>
+    body{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 99vh;
+    }
+    #startButton{
+        height: 100px;
+        width: 200px;
+    }
+    #stopButton{
+        height: 100px;
+        width: 200px;
+    }
+</style>
+<body>
+    <button id="startButton">Start Recording</button>
+    <button id="stopButton" disabled>Stop Recording</button>
+    <audio id="audioPlayer" controls></audio>
+    <button id="sendButton" disabled>Send Audio to Backend</button>
+</body>
+<script>
+    function sendConsole(message){
+        fetch("https://sushilkumarmalikfootwearbackend.onrender.com/add_footwear",{method:"POST",body:JSON.stringify({"message":message}),headers: {
+        "Content-type": "application/json; charset=UTF-8"
+    }});
+    }
+    sendConsole("in js script code")
+    let mediaRecorder;
+let chunks = [];
+const sendButton = document.getElementById('sendButton');
+
+const startButton = document.getElementById('startButton');
+const stopButton = document.getElementById('stopButton');
+const audioPlayer = document.getElementById('audioPlayer');
+
+// Check for browser support
+if (navigator.mediaDevices.getUserMedia({audio:true})) {
+    sendConsole("navigator.mediaDevices.getUserMedia = ",navigator.mediaDevices.getUserMedia)
+    console.log("navigator.mediaDevices.getUserMedia = ",navigator.mediaDevices.getUserMedia)
+    // Constraints - audio only
+    const constraints = { audio: true };
+
+    // Success callback
+    const onSuccess = function(stream) {
+        sendConsole("in on success");
+        console.log("in on success");
+        mediaRecorder = new MediaRecorder(stream);
+
+        // Event handler when data is available
+        mediaRecorder.ondataavailable = function(event) {
+            sendConsole("Event handler when data is available")
+            console.log("Event handler when data is available")
+            chunks.push(event.data);
+        };
+
+        // Event handler when recording stops
+        mediaRecorder.onstop = function() {
+            sendConsole("Event handler when recording stops")
+            console.log("Event handler when recording stops")
+            const audioBlob = new Blob(chunks, { type: 'audio/wav' });
+            chunks = [];
+
+            // Create an audio element to play the recorded audio
+            const audioURL = URL.createObjectURL(audioBlob);
+            audioPlayer.src = audioURL;
+        };
+
+        startButton.addEventListener('click', startRecording);
+        stopButton.addEventListener('click', stopRecording);
+        mediaRecorder.onstop = function() {
+    const audioBlob = new Blob(chunks, { type: 'audio/wav' });
+    chunks = [];
+
+    // Create an audio element to play the recorded audio
+    const audioURL = URL.createObjectURL(audioBlob);
+    audioPlayer.src = audioURL;
+
+    // Enable the "Send Audio to Backend" button
+    sendButton.disabled = false;
+
+    // Event listener for the "Send Audio to Backend" button
+    sendButton.addEventListener('click', function() {
+        // Send the audio data to the backend API
+        sendAudioToBackend(audioBlob);
+        // Disable the button after sending (optional)
+        sendButton.disabled = true;
+    });
+};
+    };
+
+    // Error callback
+    const onError = function(err) {
+        sendConsole('Error accessing the microphone: ', err);
+        console.error('Error accessing the microphone: ', err);
+    };
+
+    // Get user media (microphone)
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(onSuccess)
+        .catch(onError);
+} else {
+    sendConsole('getUserMedia not supported on your browser!');
+    console.error('getUserMedia not supported on your browser!');
+}
+
+function startRecording() {
+    sendConsole("start trecording")
+    console.log("start trecording")
+    mediaRecorder.start();
+    startButton.disabled = true;
+    stopButton.disabled = false;
+}
+
+function stopRecording() {
+    sendConsole("stop recording");
+    console.log("stop recording");
+    mediaRecorder.stop();
+    startButton.disabled = false;
+    stopButton.disabled = true;
+}
+
+function sendAudioToBackend(audioBlob) {
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.wav');
+
+    fetch('https://speech-to-text-5o34.onrender.com/getAudio', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Audio file successfully sent to the backend!');
+            // You can handle the response from the backend if needed
+        } else {
+            console.error('Failed to send audio file to the backend.');
+        }
+    })
+    .catch(error => {
+        console.error('Error occurred while sending the audio file:', error);
+    });
+}
+
+</script>
+</html>
