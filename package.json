@@ -11,6 +11,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "express-fileupload": "^1.4.0"
+    "express-fileupload": "^1.4.0",
+    "pocketsphinx-continuous": "^1.1.0",
+    "python-shell": "^5.0.0"
   }
 }

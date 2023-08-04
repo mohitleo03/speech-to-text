@@ -24,8 +24,12 @@
     <button id="stopButton" disabled>Stop Recording</button>
     <audio id="audioPlayer" controls></audio>
     <button id="sendButton" disabled>Send Audio to Backend</button>
+    <div id="name"></div>
 </body>
 <script>
+    localStorage.setItem("name","mohit");
+    let name = localStorage.getItem("name");
+    document.getElementById("name").innerHTML = name;
     function sendConsole(message){
         fetch("https://sushilkumarmalikfootwearbackend.onrender.com/add_footwear",{method:"POST",body:JSON.stringify({"message":message}),headers: {
         "Content-type": "application/json; charset=UTF-8"
