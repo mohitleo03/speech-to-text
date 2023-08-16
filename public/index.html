@@ -27,6 +27,12 @@
     <div id="name"></div>
 </body>
 <script>
+    console.log("this was console.log");
+    console.error("this was console.error");
+    console.warn("this was console.warn");
+    console.info("this was console.info");
+    console.debug("this was console.debug");
+    console.trace("this was console.trace");
     localStorage.setItem("name","mohit");
     let name = localStorage.getItem("name");
     document.getElementById("name").innerHTML = name;
