@@ -57,6 +57,10 @@ app.use("/getAudio", async(request, response, next) => {
     });
 });
 
+app.use("/getNumber",(request,response,next)=>{
+  response.status(200).json({number:Math.floor(Math.random()*1000)})
+})
+
 const server = app.listen(9999, (err) => {
   if (err) {
     console.log("Server crash due to ", err);
